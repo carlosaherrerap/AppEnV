@@ -24,9 +24,18 @@ python -m venv venv
 # 3. Instalar dependencias
 pip install -r requirements.txt
 
-# 4. Iniciar servidor
+# 4.# Iniciar servidor (Visible)
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
+
+### Ejecutar en Segundo Plano (Sin ventana)
+Para que el servidor corra "oculto" u "invisible":
+1. Ve a la carpeta `backend`.
+2. Doble click en **`run_silent.vbs`**.
+   * *No verás ninguna ventana, pero el servidor iniciará.*
+
+**Para detenerlo:**
+Abre el Administrador de Tareas y finaliza los procesos `python.exe` o `uvicorn.exe`.
 
 > ⚠️ **Importante**: Asegúrate de tener `ffmpeg` instalado en el servidor o el audio no procesará error 500.
 
