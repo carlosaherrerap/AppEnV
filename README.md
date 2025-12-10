@@ -75,6 +75,34 @@ npm run android   # Para probar en celular (Expo Go)
 
 ---
 
+## 📦 Generar APK (Ejecutable)
+
+Para crear un archivo `.apk` instalable:
+
+1. **Instalar EAS CLI**:
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. **Iniciar sesión en Expo**:
+   ```bash
+   eas login
+   ```
+
+3. **Configurar proyecto** (solo la primera vez):
+   ```bash
+   cd frontend
+   eas build:configure
+   ```
+
+4. **Generar el APK**:
+   ```bash
+   eas build -p android --profile preview
+   ```
+   *Esto subirá tu código a los servidores de Expo, compilará la app y te dará un link de descarga.*
+
+---
+
 ## 🎨 Feedback Visual
 
 | Color | Precisión | Significado |
