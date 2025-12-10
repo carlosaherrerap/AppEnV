@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.pyo
+*.pyd
+venv/
+env/
+.env
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.expo/
+web-build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Whisper models (large files)
+*.pt
+*.bin
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Audio recordings (test files)
+*.wav
+*.mp3
+*.webm
