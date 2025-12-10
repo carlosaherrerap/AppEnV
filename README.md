@@ -2,92 +2,84 @@
 
 App de práctica de pronunciación en inglés con feedback visual.
 
----
-
 ## 🚀 Setup Rápido
 
-### Requisitos
-- **Backend**: Python 3.11 o 3.12 (no 3.14)
-- **Frontend**: Node.js 18+
-- **Opcional**: ngrok (para exponer el backend)
+### Requisitos Previos
+- **Servidor**: Python 3.11/3.12 y **FFmpeg instalado**.
+- **Desarrollo**: Node.js 18+ y Git.
 
 ---
 
 ## 1️⃣ Backend (Servidor)
 
 ```bash
-# Navegar al backend
+# 1. Clonar repo y entrar al backend
 cd backend
 
-# Crear entorno virtual (opcional pero recomendado)
+# 2. Crear entorno virtual
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# Windows: venv\Scripts\activate
+# Linux: source venv/bin/activate
 
-# Instalar dependencias
+# 3. Instalar dependencias
 pip install -r requirements.txt
 
-# Iniciar servidor
+# 4. Iniciar servidor
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-### Exponer con ngrok (opcional)
+> ⚠️ **Importante**: Asegúrate de tener `ffmpeg` instalado en el servidor o el audio no procesará error 500.
+
+### Exponer a Internet (ngrok)
+Si no tienes IP pública, usa ngrok en el servidor:
 ```bash
 ngrok http 8000
-# Copia la URL (ej: https://abc123.ngrok.io)
+# Copia la URL (ej: https://abc.ngrok-free.app)
 ```
 
 ---
 
-## 2️⃣ Frontend (Local)
+## 2️⃣ Frontend (Cliente)
+
+El frontend corre en tu PC (web) o Celular (Android), **no en el servidor**.
 
 ```bash
-# Navegar al frontend
+# 1. Entrar al frontend
 cd frontend
 
-# Instalar dependencias
+# 2. Instalar dependencias
 npm install
 
-# Configurar URL del backend (si usas ngrok)
-# Edita: frontend/api/config.js
-# Cambia: const NGROK_URL = 'https://TU-URL.ngrok.io';
+# 3. Configurar conexión al servidor
+# Abre: frontend/api/config.js
+# Busca: const NGROK_URL = ...
+# Pon la URL de tu servidor/ngrok:
+# const NGROK_URL = 'https://abc.ngrok-free.app';
 
-# Iniciar app
-npm run web      # Navegador
-npm run android  # Android (necesita Expo Go)
+# 4. Ejecutar
+npm run web       # Para probar en navegador
+npm run android   # Para probar en celular (Expo Go)
 ```
 
 ---
 
-## 📱 Probar en Android
+## 📱 Cómo probar en Android
 
-1. Instala **Expo Go** desde Play Store
-2. Ejecuta `npm run android` en el frontend
-3. Escanea el QR con Expo Go
+1. Descarga **Expo Go** desde Google Play en tu celular.
+2. PC y Celular deben estar preferiblemente en la misma WiFi (o usar `--tunnel`).
+3. En la terminal del frontend ejecuta:
+   ```bash
+   npx expo start --clear --tunnel
+   ```
+4. Escanea el código QR con la app Expo Go.
 
 ---
 
-## 🎨 Colores de Feedback
+## 🎨 Feedback Visual
 
-| Color | Score | Significado |
-|-------|-------|-------------|
+| Color | Precisión | Significado |
+|-------|-----------|-------------|
 | 🟢 Verde | 90-100% | Excelente |
 | 🟡 Amarillo | 70-89% | Bien |
 | 🟠 Naranja | 50-69% | Mejorar |
 | 🔴 Rojo | <50% | Revisar |
-
----
-
-## 📁 Estructura
-
-```
-EnLearn/
-├── backend/           # Python + FastAPI + Whisper
-│   ├── main.py
-│   └── requirements.txt
-└── frontend/          # Expo React Native
-    ├── App.js
-    ├── components/
-    ├── api/
-    └── data/
-```
