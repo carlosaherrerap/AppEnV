@@ -200,6 +200,9 @@ async def transcribe_audio(
         )
         
     except Exception as e:
+        print(f"❌ ERROR DETALLADO DE TRANSCRIPCIÓN: {str(e)}") # Log error to console
+        import traceback
+        traceback.print_exc() # Print full stack trace
         raise HTTPException(status_code=500, detail=f"Transcription error: {str(e)}")
     
     finally:
