@@ -13,10 +13,16 @@ const NavigationButtons = ({
     onPrevious,
     onNext,
     onReset,
-    hasResults
+    hasResults,
+    overallScore = null,
+    nextDisabled = false
 }) => {
     const isFirst = currentIndex === 0;
     const isLast = currentIndex === totalPhrases - 1;
+    const isNextDisabled = nextDisabled;
+
+    // Show retry button if there are results AND score is less than 100%
+    const showRetryButton = hasResults && (overallScore === null || overallScore < 100);
 
     return (
         <View style={styles.container}>
@@ -38,17 +44,17 @@ const NavigationButtons = ({
                 </View>
 
                 <TouchableOpacity
-                    style={[styles.navButton, isLast && styles.navButtonDisabled]}
+                    style={[styles.navButton, isNextDisabled && styles.navButtonDisabled]}
                     onPress={onNext}
-                    disabled={isLast}
+                    disabled={isNextDisabled}
                 >
-                    <Text style={[styles.navButtonText, isLast && styles.navButtonTextDisabled]}>
-                        Siguiente →
+                    <Text style={[styles.navButtonText, isNextDisabled && styles.navButtonTextDisabled]}>
+                        {isLast ? '✓ Finalizar' : 'Siguiente →'}
                     </Text>
                 </TouchableOpacity>
             </View>
 
-            {hasResults && (
+            {showRetryButton && (
                 <TouchableOpacity style={styles.resetButton} onPress={onReset}>
                     <Text style={styles.resetButtonText}>🔄 Intentar de nuevo</Text>
                 </TouchableOpacity>
