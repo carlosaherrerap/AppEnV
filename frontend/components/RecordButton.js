@@ -1,13 +1,14 @@
 /**
  * RecordButton Component
- * Animated microphone button for recording audio
+ * Animated microphone button for recording audio with wave visualization
  */
 
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { colors, shadows, spacing } from '../styles/theme';
+import AudioWave from './AudioWave';
 
-const RecordButton = ({ isRecording, isProcessing, onPress, disabled }) => {
+const RecordButton = ({ isRecording, isProcessing, onPress, disabled, audioLevel = 0 }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
     const rotateAnim = useRef(new Animated.Value(0)).current;
 
@@ -62,7 +63,12 @@ const RecordButton = ({ isRecording, isProcessing, onPress, disabled }) => {
 
     const getStatusText = () => {
         if (isProcessing) return 'Analizando...';
-        if (isRecording) return 'Grabando... Toca para detener';
+        if (isRecording) {
+            if (audioLevel > 0.1) {
+                return 'Escuchando tu voz...';
+            }
+            return 'Habla ahora...';
+        }
         return 'Toca para grabar';
     };
 
@@ -73,6 +79,13 @@ const RecordButton = ({ isRecording, isProcessing, onPress, disabled }) => {
 
     return (
         <View style={styles.container}>
+            {/* Audio Wave - shows when recording */}
+            {isRecording && (
+                <View style={styles.waveContainer}>
+                    <AudioWave isActive={isRecording} audioLevel={audioLevel} />
+                </View>
+            )}
+
             <TouchableOpacity
                 onPress={onPress}
                 disabled={disabled || isProcessing}
@@ -109,6 +122,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: spacing.md,
     },
+    waveContainer: {
+        marginBottom: spacing.sm,
+    },
     outerRing: {
         width: 120,
         height: 120,
@@ -135,3 +151,4 @@ const styles = StyleSheet.create({
 });
 
 export default RecordButton;
+

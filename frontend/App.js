@@ -45,7 +45,13 @@ export default function App() {
   // Celebration animation
   const [showConfetti, setShowConfetti] = useState(false);
 
+  // Audio metering state
+  const [audioLevel, setAudioLevel] = useState(0);
+
   const recordingRef = useRef(null);
+  const meteringIntervalRef = useRef(null);
+  const silenceTimerRef = useRef(null);
+  const lastVoiceTimeRef = useRef(null);
   const currentPhrase = ALL_PHRASES[currentIndex];
 
   // Check if current phrase has been pronounced
@@ -79,6 +85,7 @@ export default function App() {
   const startRecording = async () => {
     try {
       setError(null);
+      setAudioLevel(0);
 
       if (!hasPermission) {
         await requestPermissions();
@@ -108,10 +115,42 @@ export default function App() {
           mimeType: 'audio/webm',
           bitsPerSecond: 128000,
         },
+        isMeteringEnabled: true,
       });
 
       recordingRef.current = recording;
+      lastVoiceTimeRef.current = Date.now();
       setIsRecording(true);
+
+      // Start metering polling
+      meteringIntervalRef.current = setInterval(async () => {
+        if (recordingRef.current) {
+          try {
+            const status = await recordingRef.current.getStatusAsync();
+            if (status.isRecording && status.metering !== undefined) {
+              // Convert dB to 0-1 range (typical range is -160 to 0 dB)
+              const db = status.metering;
+              const normalized = Math.max(0, Math.min(1, (db + 60) / 60));
+              setAudioLevel(normalized);
+
+              // Check for voice activity
+              if (normalized > 0.1) {
+                lastVoiceTimeRef.current = Date.now();
+              } else {
+                // Check silence duration
+                const silenceDuration = Date.now() - lastVoiceTimeRef.current;
+                if (silenceDuration >= 3000) {
+                  // 3 seconds of silence - auto stop
+                  stopRecording();
+                }
+              }
+            }
+          } catch (e) {
+            // Ignore status errors during recording
+          }
+        }
+      }, 100);
+
     } catch (err) {
       console.error('Error starting recording:', err);
       setError('Error al iniciar grabación');
@@ -120,10 +159,17 @@ export default function App() {
 
   const stopRecording = async () => {
     try {
+      // Clear metering interval
+      if (meteringIntervalRef.current) {
+        clearInterval(meteringIntervalRef.current);
+        meteringIntervalRef.current = null;
+      }
+
       if (!recordingRef.current) return;
 
       setIsRecording(false);
       setIsProcessing(true);
+      setAudioLevel(0);
 
       await recordingRef.current.stopAndUnloadAsync();
       const uri = recordingRef.current.getURI();
@@ -350,6 +396,7 @@ export default function App() {
           isProcessing={isProcessing}
           onPress={handleRecordPress}
           disabled={!hasPermission}
+          audioLevel={audioLevel}
         />
       </View>
 

@@ -3,12 +3,14 @@
  * Displays the phrase with color-coded pronunciation feedback
  */
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import * as Speech from 'expo-speech';
 import { colors, shadows, spacing } from '../styles/theme';
 import { getLevelColor, getLevelLabel } from '../data/phrases';
 
 const PhraseCard = ({ phrase, wordScores, showResults }) => {
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     const getWordColor = (color) => {
         switch (color) {
@@ -22,6 +24,21 @@ const PhraseCard = ({ phrase, wordScores, showResults }) => {
                 return colors.red;
             default:
                 return colors.textPrimary;
+        }
+    };
+
+    const handleListen = () => {
+        if (isSpeaking) {
+            Speech.stop();
+            setIsSpeaking(false);
+        } else {
+            setIsSpeaking(true);
+            Speech.speak(phrase.text, {
+                language: 'en-US',
+                rate: 0.9,
+                onDone: () => setIsSpeaking(false),
+                onError: () => setIsSpeaking(false),
+            });
         }
     };
 
@@ -78,6 +95,18 @@ const PhraseCard = ({ phrase, wordScores, showResults }) => {
             <View style={styles.phraseContainer}>
                 {showResults ? renderColoredText() : renderDefaultText()}
             </View>
+
+            {/* Listen Button */}
+            {!showResults && (
+                <TouchableOpacity
+                    style={[styles.listenButton, isSpeaking && styles.listenButtonActive]}
+                    onPress={handleListen}
+                >
+                    <Text style={styles.listenButtonText}>
+                        {isSpeaking ? '⏹️ Detener' : '🔊 Escuchar'}
+                    </Text>
+                </TouchableOpacity>
+            )}
 
             {showResults && wordScores && (
                 <View style={styles.legend}>
@@ -182,6 +211,22 @@ const styles = StyleSheet.create({
     legendText: {
         color: colors.textSecondary,
         fontSize: 12,
+    },
+    listenButton: {
+        alignSelf: 'center',
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.lg,
+        borderRadius: 20,
+        backgroundColor: colors.primary + '20',
+        marginTop: spacing.md,
+    },
+    listenButtonActive: {
+        backgroundColor: colors.primary,
+    },
+    listenButtonText: {
+        color: colors.primary,
+        fontSize: 16,
+        fontWeight: '500',
     },
 });
 
